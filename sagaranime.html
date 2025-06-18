@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Anime Hub - Shonen & More</title>
+
+<!-- Google Material Icons -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+<style>
+  /* Reset and base */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  html {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    color: #222;
+    background-color: #fafafa;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+
+  /* Layout grid */
+  body {
+    display: grid;
+    grid-template-columns: 300px 1fr 320px;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      "header header header"
+      "sidebar main aside"
+      "footer footer footer";
+    height: 100vh;
+    gap: 24px;
+    padding: 24px;
+    background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+  }
+
+  /* Responsive layout adjustments */
+  @media (max-width: 1024px) {
+    body {
+      grid-template-columns: 1fr 320px;
+      grid-template-areas:
+        "header header"
+        "main aside"
+        "footer footer";
+      padding: 16px;
+      gap: 20px;
+    }
+    nav.sidebar {
+      display: none;
+    }
+  }
+  @media (max-width: 640px) {
+    body {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "header"
+        "main"
+        "aside"
+        "footer";
+      padding: 12px;
+      gap: 16px;
+    }
+    aside {
+      grid-area: aside;
+      order: 3;
+    }
+  }
+
+  /* Header */
+  header {
+    grid-area: header;
+    background: #ffffffcc;
+    backdrop-filter: saturate(180%) blur(12px);
+    padding: 16px 32px;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  header h1 {
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: #344e86;
+    user-select: none;
+  }
+
+  /* Search w/ icon */
+  .search-container {
+    position: relative;
+    max-width: 280px;
+    flex-grow: 1;
+    margin-left: 32px;
+  }
+  .search-container input[type="search"] {
+    width: 100%;
+    padding: 12px 40px 12px 16px;
+    border-radius: 12px;
+    border: 1px solid #aac4ff;
+    background-color: #f9fbfd;
+    font-size: 1rem;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    color: #203040;
+  }
+  .search-container input[type="search"]:focus {
+    outline: none;
+    border-color: #5b7de0;
+    box-shadow: 0 0 8px 2px #5b7de0aa;
+  }
+  .search-container .material-icons {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #5b7de0cc;
+    pointer-events: none;
+  }
+
+  /* Sidebar */
+  nav.sidebar {
+    grid-area: sidebar;
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px 20px;
+    box-shadow: 0 4px 16px rgb(0 0 0 / 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    user-select: none;
+  }
+  nav.sidebar h2 {
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: #344e86;
+    margin-bottom: 12px;
+  }
+  nav.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  nav.sidebar ul li {
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-weight: 500;
+    color: #61769e;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.4s ease;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  nav.sidebar ul li:hover, nav.sidebar ul li.active {
+    background-color: #aec8ff88;
+    color: #344e86;
+    box-shadow: 0 4px 12px #5b7de0bb;
+  }
+  nav.sidebar ul li .material-icons {
+    font-size: 20px;
+  }
+
+  /* Main content */
+  main {
+    grid-area: main;
+    background: #ffffffdd;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 4px 18px rgb(0 0 0 / 0.04);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  main h2 {
+    color: #344e86;
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin-bottom: 16px;
+  }
+  .anime-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 24px;
+  }
+  .anime-card {
+    background: #f9fbfe;
+    border-radius: 16px;
+    box-shadow: 0 6px 12px rgb(85 110 230 / 0.1);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.4s ease;
+    overflow: hidden;
+  }
+  .anime-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 30px rgba(94, 110, 230, 0.25);
+  }
+  .anime-card img {
+    width: 100%;
+    height: 298px;
+    object-fit: cover;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    transition: filter 0.3s ease;
+    filter: brightness(0.94);
+  }
+  .anime-card:hover img {
+    filter: brightness(1);
+  }
+  .anime-info {
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .anime-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #2c3d63;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .anime-subtitle {
+    font-size: 0.9rem;
+    color: #7a8bb5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .anime-rating {
+    font-size: 0.9rem;
+    color: #5f86e3;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .anime-rating .material-icons {
+    font-size: 18px;
+    color: #5f86e3;
+  }
+
+  /* Right aside */
+  aside {
+    grid-area: aside;
+    background: #ffffffdd;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgb(0 0 0 / 0.05);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    user-select: none;
+  }
+  aside h3 {
+    font-weight: 600;
+    font-size: 1.3rem;
+    color: #344e86;
+    border-bottom: 2px solid #aec8ff88;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+  }
+  .recommendation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .recommendation-item {
+    display: flex;
+    gap: 14px;
+    cursor: pointer;
+    border-radius: 12px;
+    padding: 8px;
+    background: #e7f0ffcc;
+    transition: background-color 0.3s ease;
+  }
+  .recommendation-item:hover {
+    background: #aec8ffbb;
+  }
+  .recommendation-item img {
+    width: 60px;
+    height: 80px;
+    border-radius: 10px;
+    object-fit: cover;
+    filter: drop-shadow(0 0 1px #5371ff77);
+  }
+  .recommendation-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .recommendation-title {
+    color: #3451a0;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  .recommendation-sub {
+    font-size: 0.8rem;
+    color: #65789e;
+  }
+
+  /* Footer */
+  footer {
+    grid-area: footer;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #8899bb;
+    padding: 12px 0;
+    user-select: none;
+  }
+
+  /* Soft fade-in animation for cards and page load */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 15px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+  .anime-card,
+  .recommendation-item {
+    animation: fadeInUp 0.5s ease both;
+  }
+
+  /* Soft glow on hover for sidebar items */
+  nav.sidebar ul li:hover {
+    box-shadow: 0 0 12px 3px #aac4ffaa;
+  }
+
+  /* Scrollbar styling for main section */
+  main::-webkit-scrollbar {
+    width: 12px;
+  }
+  main::-webkit-scrollbar-track {
+    background: #f0f4ff;
+    border-radius: 10px;
+  }
+  main::-webkit-scrollbar-thumb {
+    background-color: #a3b9ff;
+    border-radius: 10px;
+    border: 3px solid #f0f4ff;
+  }
+</style>
+</head>
+
+<body>
+  <header>
+    <h1>Anime Hub</h1>
+    <div class="search-container" role="search" aria-label="Search anime titles">
+      <input type="search" id="search-input" placeholder="Search anime, genres, or characters…" autocomplete="off" aria-autocomplete="list" />
+      <span class="material-icons" aria-hidden="true">search</span>
+    </div>
+  </header>
+
+  <nav class="sidebar" aria-label="Anime category navigation">
+    <h2>Genres</h2>
+    <ul id="genre-list">
+      <li class="active" data-genre="all"><span class="material-icons">movie_filter</span>All</li>
+      <li data-genre="shonen"><span class="material-icons">flash_on</span>Shonen</li>
+      <li data-genre="shojo"><span class="material-icons">favorite</span>Shojo</li>
+      <li data-genre="seinen"><span class="material-icons">emoji_people</span>Seinen</li>
+      <li data-genre="isekai"><span class="material-icons">public</span>Isekai</li>
+      <li data-genre="mecha"><span class="material-icons">build</span>Mecha</li>
+      <li data-genre="slice-of-life"><span class="material-icons">stars</span>Slice of Life</li>
+    </ul>
+  </nav>
+
+  <main>
+    <h2>Featured Anime</h2>
+    <div class="anime-grid" id="anime-grid" aria-live="polite" aria-label="List of anime">
+      <!-- Anime cards inserted by JS -->
+    </div>
+  </main>
+
+  <aside aria-label="Recommended anime">
+    <h3>Recommendations</h3>
+    <div class="recommendation-list" id="recommendation-list" aria-live="polite">
+      <!-- Recommendations inserted by JS -->
+    </div>
+  </aside>
+
+  <footer>
+    &copy; 2024 Anime Hub — Inspired by Shonen & More
+  </footer>
+
+<script>
+  // Anime data set (mocked)
+  const animeData = [
+    {
+      id: "a1",
+      title: "Naruto",
+      genre: "shonen",
+      subtype: "Action",
+      rating: 4.8,
+      image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/d84da6ce-49f3-4a52-b2c2-e2001691d111.png",
+      description: "A ninja adventure of a young boy determined to be Hokage."
+    },
+    {
+      id: "a2",
+      title: "Attack on Titan",
+      genre: "seinen",
+      subtype: "Dark Fantasy",
+      rating: 4.9,
+      image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/89c7f321-3c64-4944-b9cf-db157f14dac2.png",
+      description: "Humanity fights for survival against giant Titans."
+    },
+    {
+      id: "a3",
+      title: "Your Lie in April",
+      genre: "shojo",
+      subtype: "Drama, Romance",
+      rating: 4.6,
+      image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/ddefeaef-e830-445c-a2b5-46b3fb748fda.png",
+      description: "A touching story of music and love."
+    },
+    {
+      id: "a4",
+      title: "Sword Art Online",
+      genre: "isekai",
+      subtype: "Adventure, Sci-Fi",
+      rating: 4.3,
+      image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/7c091c33-ca2d-4671-92d3-268ffa824ca8.png",
+      description: "Players trapped inside a virtual reality MMORPG."
+    },
+    {
+      id: "a5",
+      title: "Mobile Suit Gundam",
+      genre: "mecha",
+      subtype: "Sci-Fi",
+      rating: 4.1,
+      image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/ca35af27-4633-4085-a69d-51b1ea86e653.png",
+      description: "Epic war with giant robots controlled by pilots."
+    },
+    {
+      id: "a6",
+      title: "Clannad",
+      genre: "slice-of-life",
+      subtype: "Drama, Romance",
+      rating: 4.7,
+      image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/77e5978f-ac3c-45fe-89ce-956b88c45ec8.png",
+      description: "A heartwarming story of family and growth."
+    }
+  ];
+
+  // Initial recommendations subset (mock)
+  const recommendations = [
+    {
+      id: "r1",
+      title: "One Piece",
+      image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/31f5589a-b3c9-4f31-9f26-68b6f2918bba.png",
+      genre: "shonen",
+      description: "Pirate crew quest for the ultimate treasure."
+    },
+    {
+      id: "r2",
+      title: "Death Note",
+      image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/363dadb5-454f-42dd-b44f-40776d344334.png",
+      genre: "seinen",
+      description: "A notebook gives the power to kill with a name."
+    },
+    {
+      id: "r3",
+      title: "Toradora!",
+      image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b544d0bc-064f-4fa3-8004-4f3a1a6cb8a7.png",
+      genre: "shojo",
+      description: "Unique high school romance comedy."
+    }
+  ];
+
+  const genreListEl = document.getElementById("genre-list");
+  const animeGridEl = document.getElementById("anime-grid");
+  const recommendationListEl = document.getElementById("recommendation-list");
+  const searchInputEl = document.getElementById("search-input");
+
+  // Render anime cards filtered by genre and search
+  function renderAnimeGrid(filterGenre = "all", searchTerm = "") {
+    const filtered = animeData.filter(anime => {
+      const matchesGenre = filterGenre === "all" || anime.genre === filterGenre;
+      const matchesSearch = anime.title.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesGenre && matchesSearch;
+    });
+
+    animeGridEl.innerHTML = "";
+    if (filtered.length === 0) {
+      animeGridEl.innerHTML = `<p style="color:#566270; font-style: italic;">No anime found for "${searchTerm}" in selected genre.</p>`;
+      return;
+    }
+
+    filtered.forEach(anime => {
+      const card = document.createElement("article");
+      card.className = "anime-card";
+      card.tabIndex = 0;
+      card.setAttribute("role", "button");
+      card.setAttribute("aria-label", `${anime.title}, genre: ${anime.genre}, rating ${anime.rating} stars`);
+      card.innerHTML = `
+        <img src="${anime.image}" alt="Cover art for ${anime.title} anime series" loading="lazy" />
+        <div class="anime-info">
+          <h3 class="anime-title">${anime.title}</h3>
+          <p class="anime-subtitle">${anime.subtype}</p>
+          <div class="anime-rating" aria-label="Rating: ${anime.rating} out of 5 stars">
+            <span class="material-icons" aria-hidden="true">star</span>${anime.rating.toFixed(1)} 
+          </div>
+        </div>
+      `;
+      animeGridEl.appendChild(card);
+    });
+  }
+
+  function renderRecommendations() {
+    recommendationListEl.innerHTML = "";
+    recommendations.forEach(rec => {
+      const item = document.createElement("div");
+      item.className = "recommendation-item";
+      item.tabIndex = 0;
+      item.setAttribute("role", "button");
+      item.setAttribute("aria-label", `Recommended anime: ${rec.title}`);
+      item.innerHTML = `
+        <img src="${rec.image}" alt="Thumbnail cover of ${rec.title} anime" loading="lazy" />
+        <div class="recommendation-info">
+          <h4 class="recommendation-title">${rec.title}</h4>
+          <p class="recommendation-sub">${rec.description}</p>
+        </div>
+      `;
+      recommendationListEl.appendChild(item);
+    });
+  }
+
+  // Get currently selected genre
+  function getSelectedGenre() {
+    const selected = genreListEl.querySelector("li.active");
+    return selected ? selected.dataset.genre : "all";
+  }
+
+  // Switch active genre styling and rerender
+  genreListEl.addEventListener("click", e => {
+    if (e.target.tagName === "LI" || e.target.closest("li")) {
+      const li = e.target.tagName === "LI" ? e.target : e.target.closest("li");
+      const currentlyActive = genreListEl.querySelector("li.active");
+      if (li && li !== currentlyActive) {
+        currentlyActive.classList.remove("active");
+        li.classList.add("active");
+        renderAnimeGrid(li.dataset.genre, searchInputEl.value.trim());
+      }
+    }
+  });
+
+  // Search input debounced filtering
+  let searchTimeout = null;
+  searchInputEl.addEventListener("input", () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      renderAnimeGrid(getSelectedGenre(), searchInputEl.value.trim());
+    }, 300);
+  });
+
+  // Initial renders
+  renderAnimeGrid();
+  renderRecommendations();
+</script>
+</body>
+</html>
+
